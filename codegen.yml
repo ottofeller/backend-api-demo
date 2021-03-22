@@ -1,0 +1,53 @@
+overwrite: true
+schema: ./schema.json
+
+generates:
+  generated/index.ts:
+    documents:
+      - "src/**/*.{ts,tsx}"
+      - "!src/**/*.generated.{ts,tsx}"
+    plugins:
+      - add:
+          placement: 'prepend'
+          content: '/* eslint-disable */'
+      - typescript
+      - named-operations-object:
+          identifierName: ListAllOperations
+  src/:
+    documents:
+      - "src/**/*.{ts,tsx}"
+      - "!src/**/*.generated.{ts,tsx}"
+      - "!src/api/**/*"
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: ../generated/index.ts
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false
+    plugins:
+      - add:
+          placement: 'prepend'
+          content: '/* eslint-disable */'
+      - "typescript-operations"
+      - "typescript-react-apollo"
+
+  src/api/:
+    documents:
+      - "src/api/**/*.ts"
+      - "!src/api/**/*.generated.ts"
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.ts
+      baseTypesPath: ../../generated/index.ts
+    plugins:
+      - add:
+          placement: 'prepend'
+          content: '/* eslint-disable */'
+      - "typescript-operations"
+      - typescript-graphql-request
+
+  ./schema.json:
+    plugins:
+      - "introspection"
